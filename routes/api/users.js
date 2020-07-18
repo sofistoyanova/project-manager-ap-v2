@@ -1,0 +1,176 @@
+const express = require("express")
+const mongoose = require("mongoose")
+const nodemailer = require('nodemailer')
+const validator = require("validator")
+const bcrypt = require('bcrypt')
+const { v4 } = require('uuid')
+const uuid = v4
+
+const router = express.Router()
+const User = mongoose.model("users")
+const { activateProfileEmail } = require('../../helpers/email-template')
+const keys = require('../../config/keys')
+
+// Nodemailer setup
+const transporterObject = {
+  service: 'Gmail', 
+  auth: {
+      port: 587,
+      secure: false,
+      user: keys.gmailEmail, 
+      pass: keys.gmailPassword 
+  }
+}
+
+let transporter = nodemailer.createTransport(transporterObject)
+
+// Get current user
+router.get('/current-user', (req, res) => {
+  return res.send(req.session)
+})
+
+
+// Logout
+router.get('/logout', (req, res) => {
+  req.session = null
+  res.redirect('/')
+})
+
+// Activate profile
+router.patch('/activate', async (req, res) => {
+  const { key } = req.query
+  
+  try {
+    const user = await User.findOne({ activationKey: key, active: 0 })
+    console.log(user)
+    if(!user) {
+      return res.send({status: 404, message: 'The profile was not found or it was already activated'})
+    }
+
+    await User.updateOne({_id: user._id}, {active: true})
+    return res.send({status: 200})
+    if(!user) {
+        return res.send({status: 404, message: 'The profile was not found or it was already activated'})
+    }
+
+  } catch(err) {
+      res.send({status: 500, message: err.message})
+  }
+})
+
+// Login
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body
+  if(!email || !password) {
+    return res.send({status: 400, message: 'Fillin all user details'})
+  }
+
+  try {  
+    const user = await User.findOne({ email })
+    if(!user) {
+      return res.send({ status: 404, message: 'Wrong email or password1' })
+    }
+
+    const activeProfile = user.active
+    const userPassword = user.password
+
+    const doPasswordsMatch = await bcrypt.compare(password, userPassword)
+
+    if(!doPasswordsMatch) {
+      return res.send({ status: 404, message: 'Wrong email or password2' })
+    }
+
+    if(!activeProfile) {
+      return res.send({status: 400, message: 'Please activate your profile before login'})
+    }
+
+    req.session.user = user
+    return res.send({status: 200, message: 'ok'})
+
+  } catch(err) {
+    console.log(err)
+    return res.send({ status: 500, message: err.message })
+  }
+
+})
+
+router.post("/user", async (req, res) => {
+  const { firstName, lastName, email, password, confirmedPassword } = req.body
+
+  if (!email || !password || !confirmedPassword || !firstName || !lastName) {
+    return res.send({
+      status: 400,
+      message: "Please fill in all user details",
+    })
+  } else if (firstName.length < 2) {
+    return res.send({
+      status: 400,
+      message: "First name should contain at least 2 characters",
+    })
+  } else if (lastName.length < 2) {
+    return res.send({
+      status: 400,
+      message: "Last name should contain at least 2 characters",
+    })
+  } else if (password.length < 7) {
+    return res.send({
+      status: 400,
+      message: "Password should contain at least 7 characters",
+    })
+  } else if (password !== confirmedPassword) {
+    return res.send({ status: 400, message: "Passwords did not match" })
+  } else if (!validator.isEmail(email)) {
+    return res.send({ status: 400, message: "Email is not in valid format" })
+  } else {
+    try {
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, keys.saltedRounds)
+
+      // Check if email exists
+      const existingEmail = await User.findOne({ email })
+      if(existingEmail) {
+        return res.send({status: 400, message: 'Email already exists'})
+      }
+
+      // Save user
+      const user = User({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        activationKey: uuid()
+      })
+      
+      await user.save()
+
+      // Send activation email
+      const activationEmail = activateProfileEmail(user)
+      transporter.sendMail(activationEmail, (err, info) => {
+          if(err) {
+              return res.send({status: 500, message: 'Error sending activation email'})
+          }
+          
+          // Send response
+          return res.send({status: 200, message: 'User registered'})
+      })
+      return res.send({ status: 200, message: user })
+    } catch(err) {
+      return res.send({ status: 400, message: err.message })
+    }
+    // new User({
+    //   firstName,
+    //   lastName,
+    //   email,
+    //   password,
+    // })
+    // .save()
+    // .then((user) => {
+    //   return res.send({ status: 200, message: user })
+    // })
+    // .catch((err) => {
+    //   return res.send({ status: 400, message: err.message })
+    // })
+  }
+})
+
+module.exports = router
