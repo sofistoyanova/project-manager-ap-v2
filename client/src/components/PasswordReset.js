@@ -23,8 +23,8 @@ const PasswordReset = () => {
                 if(res.status === 200) {
                     setErrorMessage('Email sent with the new password')
                 } else {
-                    //console.log(res.message)
-                    setErrorMessage('There was an error please try again later')
+                    console.log(res.message)
+                    setErrorMessage('There was an error please try again later :)')
                 }
             } catch(err) {
                 console.log(err)
