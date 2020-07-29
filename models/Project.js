@@ -6,14 +6,15 @@ const projectSchema = new Schema({
     name: {
         type: String,
         required: true,
-        minlength: 2,
+        minlength: 1,
     },
     description: {
         type: String,
     },
     _user: {
         type: Schema.Types.ObjectId, 
-        ref: 'User' 
+        ref: 'User',
+        required: true,
     },
     tasks: [{
         name: {type: String, required: true, minlength: 2},

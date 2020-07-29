@@ -4,9 +4,12 @@ const mongoose = require('mongoose')
 const keys = require('./config/keys')
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const passport = require('passport')
 
 require('./models/User')
 require('./models/Project')
+
+require('./services/passport')
 
 mongoose
     .connect(keys.mongoURI, { useUnifiedTopology: true, useNewUrlParser: true })
@@ -17,12 +20,17 @@ mongoose
 const app = express()
 //app.use(bodyParser.json()); // <--- Here
 
+
 app.use(
     cookigSession({
         maxAge: 30 * 24 * 60 * 60 * 1000,
         keys: [keys.cookieKey]
     })
-)
+) 
+
+app.use(passport.initialize())
+app.use(passport.session())
+
 
 app.use(express.json())
 
@@ -47,6 +55,7 @@ if(process.env.NODE_ENV === 'production') {
         res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
     })
 }
+ 
 
 const PORT = process.env.PORT || 5001
 app.listen(PORT)

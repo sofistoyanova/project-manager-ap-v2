@@ -12,9 +12,8 @@ router.post('/payment', authMiddleware, async(req, res) => {
 
     try {
         let user = await User.findOne({email: userEmail})
-        console.log(user)
         if(user.premium) {
-            return res.send('already premium user')
+            return res.send({status: 400, message: 'Already premium user cannot charge again'})
         }
         const charge = await stripe.charges.create({
             amount: 1000,
@@ -25,11 +24,11 @@ router.post('/payment', authMiddleware, async(req, res) => {
         await User.updateOne({email: userEmail}, {premium: true})
         //user = await User.findOne({email: userEmail})
         user = await User.findOne({email: userEmail})
+        //req.session.user = user
 
-        return res.send({user: user})
+        return res.send({status: 200, message: 'Charge create'})
     } catch(err) {
         res.send('err')
-        console.log(err)
     }
 })
 

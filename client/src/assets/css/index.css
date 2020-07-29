@@ -1,0 +1,294 @@
+body {
+    background: #E5C2C2 !important;
+    margin: 0;
+}
+
+.mainPageContainer {
+    display: flex;
+    flex: 3;
+    justify-content: center;
+}
+
+.formContainer {
+    background: #FFF4F4;
+    width: 800px;
+    height: 430px;
+    border-radius: 15px;
+    margin: 20px auto 30px;
+    position: relative;
+}
+
+.formSignupContainer {
+    background: #FFF4F4;
+    width: 800px;
+    height: 630px;
+    border-radius: 15px;
+    margin: 20px auto 30px;
+    position: relative;
+}
+
+.formContainerHeader {
+    width: fit-content;
+    margin: 50px auto 0;
+    text-align: center;
+}
+
+.formContainerHeader p {
+    font-size: 20px;
+}
+
+.blueButton {
+    padding: 10px 35px;
+    border: none;
+    background: #86D0F4;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 19px;
+}
+
+.formInnerContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.loginInput {
+    display: block;
+    background: white;
+    border: 1px solid #676464;
+    border-radius: 7px;
+    margin: 5px 0 20px;
+    padding: 10px 20px;
+    width: 300px;
+}
+
+.loginButton {
+    margin: 30px auto;
+    width: 250px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 7px;
+    display: block;
+    background: #86D0F4;
+    color: #fff;
+}
+
+.forgotPasswordLink {
+    position: relative;
+    left: 230px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid black;
+}
+
+.underlineLink {
+    padding-bottom: 2px;
+    border-bottom: 1px solid black;
+    text-decoration: none;
+    color: black;
+}
+
+.forgotPasswordLink:hover,
+.underlineLink:hover {
+    color: blue;
+    border-bottom: 1px solid blue;
+}
+
+.loginLinkContainer {
+    margin: 0 auto;
+    max-width: 300px;
+}
+
+.nav-wrapper {
+    display: none;
+}
+
+.navWrapper {
+    /* background: #FFF4F4;
+    width: 370px;
+    padding: 30px;
+    height: 100%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0; */
+
+    background: #FFF4F4;
+    padding: 30px;
+    height: 100vh;
+    flex: 1;
+}
+
+.accountImage {
+    width: 50px;
+}
+
+.accountuserName {
+    margin-left: 50px;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.navAccountContainer {
+    border-bottom: 1.5px solid black;
+    padding-bottom: 10px;
+    margin-bottom: 50px;
+}
+
+.navLink {
+    display: block;
+    margin: 12px 0;
+    font-size: 26px;
+    text-decoration: none;
+    color: #F14C4C;
+    font-weight: 600;
+}
+
+.navLinkLogout {
+    margin-top: 30px;
+}
+
+.mainHeadline {
+    font-size: 70px;
+}
+
+.projectsContainer {
+    margin-bottom: 80px;
+}
+
+.projectsContainerTitle {
+    font-size: 50px;
+    color: #F14C4C;
+}
+
+.noProjectsText {
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.addProjectButton {
+    background: white;
+    padding: 12px 40px;
+    color: #676464;
+    text-decoration: none;
+    font-size: 24px;
+    margin: 10px;
+}
+
+.container {
+    display: flex;
+}
+
+.CreateProjectformContainer {
+    margin-top: 100px;
+}
+
+.createProjectButton, .addTaskButton  {
+    background: white;
+    padding: 12px 40px;
+    color: #676464;
+    text-decoration: none;
+    border-width: 0;
+    border-radius: 7px;
+    border: 1px solid;
+}
+
+.addTaskButton {
+    margin-top: 10px;
+}
+
+.tasksContainer {
+    background: #FFF4F4;
+    border-radius: 3px;
+}
+
+.task {
+    padding: 20px;
+    /* height: 40px; */
+    width: 500px;
+    border-bottom: 1px solid black;
+    /* display: flex; */
+}
+
+.task>div,
+.task>button {
+    margin: 0 10px;
+}
+
+.taskDueDate {
+    float: right;
+}
+
+.taskName {
+    float: left;
+}
+
+.tasksTitle {
+    margin-top: 50px;
+}
+
+.createTaskForm {
+    margin-top: 20px;
+}
+
+.createTaskButton {
+    background: #F14C4C;
+    padding: 5px 34px;
+    color: white;
+    text-decoration: none;
+    border-width: 0;
+    border-radius: 7px;
+    border: none;
+}
+
+.createTaskForm {
+    display: none;
+}
+
+.displayBlock {
+    display: block !important;
+}
+
+.project {
+    display: inline-block;
+    background: white;
+    padding: 20px;
+    width: 300px;
+    height: 100px;
+    margin: 10px;
+}
+
+.projectName {
+    text-transform: capitalize;
+    color: #F14C4C;
+}
+
+.projectLink {
+    color: black;
+}
+
+.checkImage {
+    width: 30px;
+}
+
+.updateTaskForm {
+    display: none;
+    margin: 20px 0;
+}
+
+.taskDetails {
+    display: flex;
+}
+
+.taskDetails>div,
+.taskDetails>button {
+    margin: 10px;
+}
+
+.displayNone {
+    display: none;
+}
+
+.profileDetailsForm {
+    margin-top: 50px;
+}

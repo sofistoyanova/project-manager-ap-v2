@@ -1,4 +1,6 @@
 module.exports = {
+    googleClientId: '160020177112-rsfak99l44ad61drbq5ovq58lqj6f3lt.apps.googleusercontent.com',
+    googleClientSecret: '0OMJKRKrytxfi6iLr16TyTBl',
     mongoURI: 'mongodb+srv://shaunaa:47NJRmZm4rY7CRS9@project-manager-ttggb.mongodb.net/project-manager?retryWrites=true&w=majority',
     gmailEmail: 'sofi.stoyanova2@gmail.com',
     gmailPassword: 'HttpRequest2020',

@@ -19,8 +19,23 @@ const activateProfileEmail = (user) => {
     return email
 }
 
-const resetPasswordEmail = () => {
-    const email = ''
+const resetPasswordEmail = (user, password) => {
+    const userEmail = user['email']
+    const firstName = user['firstName']
+    const lastName = user['lastName']
+    const key = user['activationKey']
+
+    //const url = `http://localhost:5001/activate-profile?key=${key}`
+    const email = {
+        from: 'My website',
+        to: userEmail,
+        subject: 'New password',
+        html: `
+            <p>Hey ${firstName} ${lastName},</p>
+            <p>this is your new password</p>
+            <p>${password}</p>
+        ` 
+    }
     return email
 }
 

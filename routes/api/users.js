@@ -3,13 +3,27 @@ const mongoose = require("mongoose")
 const nodemailer = require('nodemailer')
 const validator = require("validator")
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const { v4 } = require('uuid')
 const uuid = v4
 
+const passport = require('passport')
+// const GoogleStrategy = require('passport-google-oauth20').Strategy
+
 const router = express.Router()
 const User = mongoose.model("users")
-const { activateProfileEmail } = require('../../helpers/email-template')
+const { activateProfileEmail, resetPasswordEmail } = require('../../helpers/email-template')
 const keys = require('../../config/keys')
+const { route } = require("./projects")
+
+router.get('/auth/google', passport.authenticate('google', {
+  scope: ['profile', 'email']
+}))
+
+router.get('/auth/google/callback', passport.authenticate('google'), (req, res) => {
+  req.session.user = req.user
+  res.redirect('/')
+})
 
 // Nodemailer setup
 const transporterObject = {
@@ -25,15 +39,65 @@ const transporterObject = {
 let transporter = nodemailer.createTransport(transporterObject)
 
 // Get current user
-router.get('/current-user', (req, res) => {
+router.get('/current-user', async (req, res) => {
+  // const { userId } = req.params
+  // try {
+  //   const user = await User.findById(userId)
+  //   if(!user) {
+  //     return res.send({user: ''})
+  //   }
+  //   return res.send({ user })
+  // } catch(err) {
+  //   console.log(err)
+  // }
   return res.send(req.session)
 })
 
+//reset password
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body
+
+  if(!email) {
+    return res.send({status: 400, message: 'Please enter an email'})
+  }
+
+  try {
+    const [ user ] = await User.find({email: email})
+    if(!user) {
+      return res.send({status: 404, message: 'Email does not exists in the system'})
+    }
+
+    //generate new password
+    const randomPassword = Math.random().toString(36).slice(-8)
+
+    //hash password
+    const hashedPassword = await bcrypt.hash(randomPassword, 3)
+
+    // update the user password
+    user.password = hashedPassword
+    user.save()
+
+    //send the new password to email
+      // Send activation email
+      const resetpasswordEmail = resetPasswordEmail(user, randomPassword)
+      transporter.sendMail(resetpasswordEmail, (err, info) => {
+          if(err) {
+            return res.send({status: 500, message: 'Error sending  email'})
+          }
+          
+          // Send response
+          return res.send({status: 200, message: 'an email with the new password was sent to the provided email'})
+        })
+    //send respone
+  } catch (err) {
+    return res.send({status: 500, message: 'An error occur please try again later'})
+  }
+})
 
 // Logout
 router.get('/logout', (req, res) => {
   req.session = null
-  res.redirect('/')
+  res.redirect('/login')
 })
 
 // Activate profile
@@ -42,7 +106,6 @@ router.patch('/activate', async (req, res) => {
   
   try {
     const user = await User.findOne({ activationKey: key, active: 0 })
-    console.log(user)
     if(!user) {
       return res.send({status: 404, message: 'The profile was not found or it was already activated'})
     }
@@ -77,7 +140,7 @@ router.post("/login", async (req, res) => {
     const doPasswordsMatch = await bcrypt.compare(password, userPassword)
 
     if(!doPasswordsMatch) {
-      return res.send({ status: 404, message: 'Wrong email or password2' })
+      return res.send({ status: 404, message: 'Wrong email or password' })
     }
 
     if(!activeProfile) {
@@ -85,16 +148,49 @@ router.post("/login", async (req, res) => {
     }
 
     req.session.user = user
-    return res.send({status: 200, message: 'ok'})
+    return res.send({status: 200, message: user})
 
   } catch(err) {
-    console.log(err)
     return res.send({ status: 500, message: err.message })
   }
 
 })
 
-router.post("/user", async (req, res) => {
+router.patch('/update-profile/:userId', async (req, res) => {
+  const {userId} = req.params
+  //const { firstName, lastName, email } = req.body
+  const updates = Object.keys(req.body)
+  const allowedUpdates = ['firstName', 'lastName', 'email', 'password']
+  const isValidUpdate = updates.every((update) => {
+    return allowedUpdates.includes(update)
+  })
+
+  if(!isValidUpdate) {
+    return res.send({status: 400, message: 'Update is invalid'}) 
+  }
+
+  try {
+    let user = await User.findById(userId)
+
+    if(!user) {
+      return res.send({status: 404, message: 'User not found'})
+    }
+
+    updates.map((update) => {
+      if(req.body[update] != '') {
+        user[update] = req.body[update]
+      }
+    })
+
+    user = await user.save()
+    req.session.user = user
+    return res.send({status: 200, message: 'Updated'})
+  } catch(err) {
+    return res.send({ status: 500, message: 'Something went wrong please try again later' })
+  }
+})
+
+router.post("/signup", async (req, res) => {
   const { firstName, lastName, email, password, confirmedPassword } = req.body
 
   if (!email || !password || !confirmedPassword || !firstName || !lastName) {
@@ -172,5 +268,7 @@ router.post("/user", async (req, res) => {
     // })
   }
 })
+
+// register with google
 
 module.exports = router

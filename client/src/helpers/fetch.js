@@ -60,7 +60,7 @@ export const getMethod1 = async (route) => {
     }
 }
 
-export const patchMethod = async (route, requestBody) => {
+export const patchMethod1 = async (route, requestBody) => {
     const requestOptions = {
         method: 'PATCH',
         credentials: 'include',
@@ -79,7 +79,7 @@ export const patchMethod = async (route, requestBody) => {
     }
 }
 
-export const deleteMethod = async (route) => {
+export const deleteMethod1 = async (route) => {
     const requestOptions = {
         method: 'DELETE',
         credentials: 'include',
@@ -92,6 +92,24 @@ export const deleteMethod = async (route) => {
         const response = await fetch(url + route, requestOptions)
         const data = await response.json()
         return data
+    } catch(err) {
+        return err
+    }
+}
+
+export const patchMethod = async (route, formData) => {
+    try {
+        const res = await axios.patch(route, formData)
+        return res
+    } catch(err) {
+        return err
+    }
+}
+
+export const deleteMethod = async (route) => {
+    try {
+        const res = await axios.delete(route)
+        return res
     } catch(err) {
         return err
     }

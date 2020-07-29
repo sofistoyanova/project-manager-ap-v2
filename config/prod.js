@@ -1,4 +1,6 @@
 module.exports = {
+    googleClientId: process.env.GOOGLE_CLIENT_ID,
+    googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
     mongoURI: process.env.MONGO_URI,
     gmailEmail: process.env.GMAIL_EMAIL,
     gmailPassword: process.env.GMAIL_PASSWORD,
