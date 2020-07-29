@@ -82,7 +82,7 @@ router.post('/forgot-password', async (req, res) => {
       const resetpasswordEmail = resetPasswordEmail(user, randomPassword)
       transporter.sendMail(resetpasswordEmail, (err, info) => {
           if(err) {
-            return res.send({status: 500, message: 'Error sending  email'})
+            return res.send({status: 500, message: err})
           }
           
           // Send response
