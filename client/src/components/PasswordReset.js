@@ -21,10 +21,10 @@ const PasswordReset = () => {
                 let res = await postMethod(formData, route)
                 res = res.data
                 if(res.status === 200) {
-                    setErrorMessage(res.message)
+                    setErrorMessage('Email sent with the new password')
                 } else {
-                    console.log(res.message)
-                    setErrorMessage(res.message)
+                    //console.log(res.message)
+                    setErrorMessage('There was an error please try again later')
                 }
             } catch(err) {
                 console.log(err)
