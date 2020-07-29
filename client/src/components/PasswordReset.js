@@ -23,10 +23,12 @@ const PasswordReset = () => {
                 if(res.status === 200) {
                     setErrorMessage(res.message)
                 } else {
+                    console.log(res.message)
                     setErrorMessage(res.message)
                 }
             } catch(err) {
-                setErrorMessage('There was an error please try again later!')
+                console.log(err)
+                //setErrorMessage('There was an error please try again later!')
             }
         } else {
             setErrorMessage(isFormDataValid.message)
