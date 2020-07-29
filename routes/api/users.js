@@ -131,7 +131,7 @@ router.post("/login", async (req, res) => {
   try {  
     const user = await User.findOne({ email })
     if(!user) {
-      return res.send({ status: 404, message: 'Wrong email or password1' })
+      return res.send({ status: 404, message: 'Wrong email or password' })
     }
 
     const activeProfile = user.active
@@ -240,16 +240,16 @@ router.post("/signup", async (req, res) => {
       await user.save()
 
       // Send activation email
-      const activationEmail = activateProfileEmail(user)
-      transporter.sendMail(activationEmail, (err, info) => {
-          if(err) {
-              return res.send({status: 500, message: 'Error sending activation email'})
-          }
+      // const activationEmail = activateProfileEmail(user)
+      // transporter.sendMail(activationEmail, (err, info) => {
+      //     if(err) {
+      //         return res.send({status: 500, message: 'Error sending activation email'})
+      //     }
           
-          // Send response
-          return res.send({status: 200, message: 'User registered'})
-      })
-      return res.send({ status: 200, message: user })
+      //     // Send response
+      //     return res.send({status: 200, message: 'User registered'})
+      // })
+      return res.send({ status: 200, message: 'Registered! pleade go to login' })
     } catch(err) {
       return res.send({ status: 400, message: err.message })
     }
@@ -266,6 +266,37 @@ router.post("/signup", async (req, res) => {
     // .catch((err) => {
     //   return res.send({ status: 400, message: err.message })
     // })
+  }
+})
+
+router.patch('/change-password/:userId', async (req, res) => {
+  const {userId} = req.params
+  const {oldPassword, newPassword, newPasswordConfirm} = req.body
+
+  try {
+    const user = await User.findById(userId)
+    if(!user) {
+      return res.send({ status: 404, message: 'User id not found' })
+    }
+
+    const userPassword = user.password
+    const doPasswordsMatch = await bcrypt.compare(oldPassword, userPassword)
+    if(!doPasswordsMatch) {
+      return res.send({status: 400, message: 'Old passowrd wrong'})
+    }
+
+    if(newPassword != newPasswordConfirm) {
+      return res.send({status: 400, message: 'New password did not match'})
+    } else if(newPassword.length < 7 ) {
+      return res.send({status: 400, message: 'Password should contain at least 7 characters'})
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 3)
+    user.password = hashedPassword
+    await user.save()
+    return res.send({status: 200, message: 'Password was changed'})
+  } catch(err) {
+    res.send({status: 200, message: 'There was an error, please try again later'})
   }
 })
 

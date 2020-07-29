@@ -127,4 +127,4 @@ export const profileUpdateValidation = (formData) => {
     
     message = {isValid: true}
     return message
-}   
+}

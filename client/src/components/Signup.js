@@ -23,7 +23,7 @@ const Signup = (props) => {
                 let signupResponse = await postMethod(formData, route)
                 signupResponse = signupResponse.data
                 if(signupResponse.status === 200) {
-                    return setSignupStatusMessage('Check your email to validate your profile')
+                    return setSignupStatusMessage('Registered successfully! Please go to login.')
                 } else {
                     setSignupStatusMessage(signupResponse.message)
                 }
@@ -37,12 +37,6 @@ const Signup = (props) => {
 
     return (
         <div>
-            {/* <h2>Login</h2>
-            <form onSubmit={handleFormSubmit}>
-                <input type="email" name="email" placeholder="email" required />
-                <input type="password" name="password" placeholder="password" required />
-                <input type="submit" value="LOGIN" />
-            </form> */}
             <div className="formContainerHeader">
                 <h2>SIGN UP</h2>
                 <p>or</p>
