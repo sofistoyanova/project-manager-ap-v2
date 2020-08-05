@@ -21,7 +21,7 @@ export const handleStripeToken = (token) =>
             checkoutButton.classList.add('displayNone')
             // set local storage
             if(!localStorage.getItem('isPremium')){
-                localStorage.setItem('isPremium', JSON.stringify(res))
+                //localStorage.setItem('isPremium', JSON.stringify(res))
             }
             dispatch({type: IS_PREMIUM, payload: res})
         }

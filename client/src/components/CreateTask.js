@@ -14,12 +14,14 @@ const CreateTask = (props) => {
 
     const handleFormSubmit = (event) => {
         event.preventDefault()
-        const form = document.querySelector('form')
+        const form = document.querySelector('.createTaskForm')
+        console.log(form)
         const formData = Object.fromEntries(new FormData(form).entries())
         handleFormValidation(formData)
     }
 
     const handleFormValidation = async (formData) => {
+        console.log('form', formData)
         const isFormDataValid = createTaskValidation(formData)
 
         if(isFormDataValid.isValid) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { userLoginValidation } from '../helpers/formValidation'
 import { postMethod } from '../helpers/fetch'
 import { Link } from 'react-router-dom'
@@ -10,6 +10,12 @@ const Login = (props) => {
     let history = useHistory()
     let location = useLocation()
     let { from } = location.state || { from: { pathname: "/" } }
+
+    useEffect(() => {
+        if(window.localStorage.getItem('userId')) {
+            window.location.replace("/")
+        }
+    })
 
     const handleFormSubmit = (event) => {
         event.preventDefault()
@@ -29,7 +35,6 @@ const Login = (props) => {
                 if(loginResponse.status === 200) {
                     const userId = loginResponse.message._id
                     window.localStorage.setItem('userId', userId)
-                    //window.localStorage.setItem('loggedIn', true)
                     window.location.replace("/")
 
                 } else {

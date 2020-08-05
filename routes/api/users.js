@@ -6,6 +6,17 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { v4 } = require('uuid')
 const uuid = v4
+const multer = require('multer')
+
+// Set Storage Engine for multer
+const storage = multer.diskStorage({
+  destination:  function(req, file, cb) {
+      cb(null, './client/src/uploads')
+  },
+  filename: function(req, file, cb) {
+      cb(null, file.originalname )
+  }
+})
 
 const passport = require('passport')
 // const GoogleStrategy = require('passport-google-oauth20').Strategy
@@ -158,6 +169,7 @@ router.post("/login", async (req, res) => {
 
 router.patch('/update-profile/:userId', async (req, res) => {
   const {userId} = req.params
+
   //const { firstName, lastName, email } = req.body
   const updates = Object.keys(req.body)
   const allowedUpdates = ['firstName', 'lastName', 'email', 'password']
@@ -267,6 +279,32 @@ router.post("/signup", async (req, res) => {
     //   return res.send({ status: 400, message: err.message })
     // })
   }
+})
+
+const upload = multer({ storage: storage })
+router.patch('/update-profile-image/:userId', upload.single('file'), async(req, res) => {
+  const file = req.file
+  const {userId} = req.params
+  console.log(typeof file)
+  console.log(file.originalname)
+
+  try {
+    const user = await User.findById(userId)
+    if(!user) {
+      return res.send({ status: 404, message: 'User id not found' })
+    }
+
+    user.image = file.originalname
+    
+    await user.save()
+    req.session.user = user
+
+    return res.send({status: 200, message: 'Image was uploade. Please refresh the page to see the update!'})
+  } catch(err) {
+    console.log(err)
+    return res.send({status: 500, message: 'There was an error please try again later'})
+  }
+
 })
 
 router.patch('/change-password/:userId', async (req, res) => {

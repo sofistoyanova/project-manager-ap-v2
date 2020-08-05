@@ -24,7 +24,7 @@ router.post('/payment', authMiddleware, async(req, res) => {
         await User.updateOne({email: userEmail}, {premium: true})
         //user = await User.findOne({email: userEmail})
         user = await User.findOne({email: userEmail})
-        //req.session.user = user
+        req.session.user = user
 
         return res.send({status: 200, message: 'Charge create'})
     } catch(err) {

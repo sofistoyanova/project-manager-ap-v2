@@ -1,26 +1,28 @@
-const mongoose = require('mongoose')
-const { Schema } = mongoose
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 // Create new model class
 const projectSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-        minlength: 1,
+  name: {
+    type: String,
+    required: true,
+    minlength: 1,
+  },
+  description: {
+    type: String,
+  },
+  _user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  tasks: [
+    {
+      name: { type: String, required: true, minlength: 2 },
+      completed: { type: Boolean, required: true, default: 0 },
     },
-    description: {
-        type: String,
-    },
-    _user: {
-        type: Schema.Types.ObjectId, 
-        ref: 'User',
-        required: true,
-    },
-    tasks: [{
-        name: {type: String, required: true, minlength: 2},
-        completed: {type: Boolean, required: true, default: 0}
-    }]
-})
+  ],
+});
 
 // Create new collection and connect it to the projectSchema
-mongoose.model('projects', projectSchema)
+mongoose.model("projects", projectSchema);
